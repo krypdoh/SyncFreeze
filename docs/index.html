@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SyncFreeze - File Sync Pause Utility</title>
+    <link rel="icon" type="image/png" href="syncfreeze-icon.png">
+    <style>
+        @font-face {
+            font-family: 'FrostGiant';
+            src: url('FrostGiant-OVVy6.otf') format('opentype');
+            font-display: swap;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --frost: #4FB0E6;
+            --frost-light: #A7E0FA;
+            --frost-dark: #2E86C1;
+            --bg: #0A0E14;
+            --bg-surface: #121A24;
+            --bg-card: #17222F;
+            --text: #EAF4FB;
+            --text-muted: #93A7B8;
+            --border: #24303D;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        a { color: var(--frost-light); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        .heading {
+            font-family: 'FrostGiant', 'Segoe UI', sans-serif;
+            font-weight: 400;
+            letter-spacing: 1px;
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 70px 20px 60px;
+            background: radial-gradient(1200px 500px at 50% -10%, #0E2C41 0%, var(--bg) 70%);
+        }
+
+        .hero-wordmark {
+            width: 100%;
+            max-width: 620px;
+            height: auto;
+            margin: 0 auto 24px;
+            display: block;
+            mix-blend-mode: screen;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            max-width: 620px;
+            margin: 0 auto 32px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 32px;
+            background: var(--frost-dark);
+            color: white;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn:hover { background: var(--frost); text-decoration: none; transform: translateY(-1px); }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--frost-dark);
+            color: var(--frost-light);
+            margin-left: 12px;
+        }
+
+        .btn-outline:hover { background: var(--frost-dark); color: white; }
+
+        /* Sections */
+        .section {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        .section h2 {
+            text-align: center;
+            font-size: 2.2rem;
+            margin-bottom: 40px;
+            color: var(--frost-light);
+        }
+
+        .lead {
+            text-align: center;
+            color: var(--text-muted);
+            max-width: 720px;
+            margin: -20px auto 40px;
+            font-size: 1.05rem;
+        }
+
+        /* Feature / service cards */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 26px;
+            transition: border-color 0.2s, transform 0.1s;
+        }
+
+        .card:hover { border-color: var(--frost-dark); transform: translateY(-2px); }
+
+        .card h3 {
+            color: var(--frost-light);
+            margin-bottom: 8px;
+            font-size: 1.15rem;
+        }
+
+        .card p { color: var(--text-muted); font-size: 0.95rem; }
+
+        .card code {
+            color: var(--frost-light);
+            background: #0D141C;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Cascadia Code', 'Consolas', monospace;
+            font-size: 0.85rem;
+        }
+
+        /* Services */
+        .service-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 14px;
+        }
+
+        .service {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px 18px;
+        }
+
+        .service .name { font-weight: 600; }
+        .service code {
+            color: var(--frost-light);
+            font-family: 'Cascadia Code', 'Consolas', monospace;
+            font-size: 0.82rem;
+        }
+
+        /* CLI */
+        .cli-section { background: var(--bg-surface); border-radius: 12px; padding: 40px; }
+        .cli-section h2 { text-align: left; margin-bottom: 20px; }
+
+        .cli-block {
+            background: #060B11;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+        }
+
+        .cli-block .prompt { color: var(--frost-light); }
+        .cli-block .comment { color: #5E7285; }
+        .cli-block .line { margin-bottom: 6px; white-space: pre; }
+
+        /* How it works */
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            text-align: center;
+        }
+
+        .step-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            background: var(--frost-dark);
+            border-radius: 50%;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .steps h3 { margin-bottom: 8px; color: var(--frost-light); }
+        .steps p { color: var(--text-muted); font-size: 0.9rem; }
+        .steps code {
+            color: var(--frost-light);
+            font-family: 'Cascadia Code', 'Consolas', monospace;
+            font-size: 0.82rem;
+        }
+
+        /* Tray menu preview */
+        .tray-preview {
+            max-width: 320px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .tray-item {
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--border);
+            cursor: default;
+        }
+
+        .tray-item:last-child { border-bottom: none; }
+        .tray-item:hover { background: var(--frost-dark); }
+        .tray-sep { border-bottom: 1px solid var(--border); margin: 0; }
+        .tray-item.muted { color: var(--text-muted); }
+
+        /* Config */
+        pre.config {
+            background: #060B11;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 22px;
+            overflow-x: auto;
+            font-family: 'Cascadia Code', 'Consolas', monospace;
+            font-size: 0.88rem;
+            color: var(--text);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-icon { width: 44px; height: 44px; margin-bottom: 12px; mix-blend-mode: screen; }
+
+        @media (max-width: 600px) {
+            .hero p { font-size: 1rem; }
+            .btn { display: block; margin: 10px auto; max-width: 260px; }
+            .btn-outline { margin-left: 0; }
+            .section h2 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero">
+    <img src="SyncFreeze.png" alt="SyncFreeze" class="hero-wordmark">
+    <p>Temporarily pause your file-sync services for a specified duration. Set a timer, walk away, and everything resumes automatically.</p>
+    <a href="https://github.com/krypdoh/SyncFreeze/releases" class="btn">Download for Windows</a>
+    <a href="#cli" class="btn btn-outline">View CLI Usage</a>
+</section>
+
+<!-- Supported Services -->
+<section class="section">
+    <h2 class="heading">Supported Services</h2>
+    <p class="lead">Choose any combination of clients in the Settings screen. SyncFreeze pauses each by stopping its process and restarts it when the timer expires. Dropbox is enabled by default.</p>
+    <div class="service-list">
+        <div class="service"><span class="name">Microsoft OneDrive</span><code>OneDrive.exe</code></div>
+        <div class="service"><span class="name">Google Drive</span><code>GoogleDriveFS.exe</code></div>
+        <div class="service"><span class="name">Dropbox</span><code>Dropbox.exe</code></div>
+        <div class="service"><span class="name">Apple iCloud Drive</span><code>iCloudDrive.exe</code></div>
+        <div class="service"><span class="name">Box</span><code>Box.exe</code></div>
+        <div class="service"><span class="name">MEGA</span><code>MEGAsync.exe</code></div>
+        <div class="service"><span class="name">IDrive</span><code>idwutil_64.exe</code></div>
+        <div class="service"><span class="name">pCloud</span><code>pCloud.exe</code></div>
+        <div class="service"><span class="name">Sync.com</span><code>sync-taskbar.exe</code></div>
+    </div>
+</section>
+
+<!-- Features -->
+<section class="section">
+    <h2 class="heading">Features</h2>
+    <div class="grid">
+        <div class="card">
+            <h3>❄️ Multi-Service Support</h3>
+            <p>Pause and resume several sync clients at once — Dropbox, OneDrive, Google Drive, and more.</p>
+        </div>
+        <div class="card">
+            <h3>⚙️ Settings Screen</h3>
+            <p>Check off exactly which services SyncFreeze controls. Your selection applies to both the tray and the CLI.</p>
+        </div>
+        <div class="card">
+            <h3>⏱️ Timed Pause</h3>
+            <p>Pause for 1 minute, an hour, or any custom duration. Decimals supported — even 30 seconds.</p>
+        </div>
+        <div class="card">
+            <h3>🖥️ System Tray</h3>
+            <p>Lives quietly in your tray. Right-click for quick actions; double-click for a live status window with countdown.</p>
+        </div>
+        <div class="card">
+            <h3>💻 Command Line</h3>
+            <p>Full CLI support. Script it, schedule it, or run it from your terminal. Perfect for power users.</p>
+        </div>
+        <div class="card">
+            <h3>🧊 Visual Status</h3>
+            <p>The tray icon gains a blue glow while paused, so you always know your sync state at a glance.</p>
+        </div>
+        <div class="card">
+            <h3>🔔 Notifications</h3>
+            <p>Balloon notifications when pausing and resuming. Toggle them off if you prefer silence.</p>
+        </div>
+        <div class="card">
+            <h3>♾️ Indefinite Pause</h3>
+            <p>Need sync off for a while? Pause indefinitely and resume manually whenever you're ready.</p>
+        </div>
+        <div class="card">
+            <h3>🔁 Auto-Resume on Exit</h3>
+            <p>Close SyncFreeze while paused and it restarts your selected services automatically.</p>
+        </div>
+    </div>
+</section>
+
+<!-- How it works -->
+<section class="section">
+    <h2 class="heading">How It Works</h2>
+    <div class="steps">
+        <div>
+            <div class="step-num">1</div>
+            <h3 class="heading">Pause</h3>
+            <p>Choose a duration from the tray menu or run <code>SyncFreeze -t 5</code> from the command line.</p>
+        </div>
+        <div>
+            <div class="step-num">2</div>
+            <h3 class="heading">Wait</h3>
+            <p>Your selected services are stopped. The tray icon glows blue and a countdown begins.</p>
+        </div>
+        <div>
+            <div class="step-num">3</div>
+            <h3 class="heading">Resume</h3>
+            <p>When the timer expires, everything restarts automatically. Or resume early with <code>SyncFreeze -r</code>.</p>
+        </div>
+    </div>
+</section>
+
+<!-- CLI -->
+<section class="section" id="cli">
+    <div class="cli-section">
+        <h2 class="heading">Command Line Interface</h2>
+        <div class="cli-block">
+            <div class="line"><span class="comment"># Pause selected services for 5 minutes</span></div>
+            <div class="line"><span class="prompt">&gt;</span> SyncFreeze -t 5</div>
+            <div class="line">&nbsp;</div>
+            <div class="line"><span class="comment"># Pause for 30 seconds</span></div>
+            <div class="line"><span class="prompt">&gt;</span> SyncFreeze -t .5</div>
+            <div class="line">&nbsp;</div>
+            <div class="line"><span class="comment"># Pause indefinitely</span></div>
+            <div class="line"><span class="prompt">&gt;</span> SyncFreeze -t 0</div>
+            <div class="line">&nbsp;</div>
+            <div class="line"><span class="comment"># Resume selected services (overrides any timer)</span></div>
+            <div class="line"><span class="prompt">&gt;</span> SyncFreeze -r</div>
+            <div class="line">&nbsp;</div>
+            <div class="line"><span class="comment"># Check current status</span></div>
+            <div class="line"><span class="prompt">&gt;</span> SyncFreeze -s</div>
+            <div class="line">Sync services:</div>
+            <div class="line">  Dropbox: Stopped</div>
+            <div class="line">  Microsoft OneDrive: Stopped</div>
+            <div class="line">SyncFreeze state: Paused</div>
+            <div class="line">Remaining:        03:42</div>
+        </div>
+    </div>
+</section>
+
+<!-- Tray Menu -->
+<section class="section">
+    <h2 class="heading">Tray Menu</h2>
+    <div class="tray-preview">
+        <div class="tray-item">Status...</div>
+        <div class="tray-sep"></div>
+        <div class="tray-item">Pause 1 minute</div>
+        <div class="tray-item">Pause 5 minutes</div>
+        <div class="tray-item">Pause 10 minutes</div>
+        <div class="tray-item">Pause 30 minutes</div>
+        <div class="tray-item">Pause 1 hour</div>
+        <div class="tray-item">Pause indefinitely</div>
+        <div class="tray-sep"></div>
+        <div class="tray-item">Resume</div>
+        <div class="tray-sep"></div>
+        <div class="tray-item">Settings...</div>
+        <div class="tray-item muted">✓ Notifications</div>
+        <div class="tray-item muted">About...</div>
+        <div class="tray-item muted">Exit</div>
+    </div>
+</section>
+
+<!-- Configuration -->
+<section class="section">
+    <h2 class="heading">Configuration</h2>
+    <p class="lead">Settings are stored in <code>%APPDATA%\SyncFreeze\config.json</code>. Executable paths are captured automatically when a service is stopped, so it can be restarted reliably.</p>
+    <pre class="config">{
+  "notifications_enabled": true,
+  "enabled_services": ["dropbox", "onedrive"],
+  "service_paths": {
+    "dropbox": "C:\\Program Files (x86)\\Dropbox\\Client\\Dropbox.exe",
+    "onedrive": "C:\\Users\\you\\AppData\\Local\\Microsoft\\OneDrive\\OneDrive.exe"
+  }
+}</pre>
+</section>
+
+<!-- Footer -->
+<footer>
+    <img src="syncfreeze-icon.png" alt="SyncFreeze" class="footer-icon">
+    <p>SyncFreeze v1.0.0 &mdash; &copy; 2026 &mdash; Built with Python &bull; Windows 10/11</p>
+</footer>
+
+</body>
+</html>
