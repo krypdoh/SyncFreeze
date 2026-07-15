@@ -11,17 +11,17 @@ duration expires, the selected services automatically restart.
 
 Select any combination of the following in the **Settings** screen:
 
-| Service | Process |
-|---------|---------|
-| Microsoft OneDrive | `OneDrive.exe` |
-| Google Drive | `GoogleDriveFS.exe` |
-| Dropbox | `Dropbox.exe` |
-| Apple iCloud Drive | `iCloudDrive.exe` |
-| Box | `Box.exe` |
-| MEGA | `MEGAsync.exe` |
-| IDrive | `idwutil_64.exe` |
-| pCloud | `pCloud.exe` |
-| Sync.com | `sync-taskbar.exe` |
+| Service            | Process             |
+| ------------------ | ------------------- |
+| Microsoft OneDrive | `OneDrive.exe`      |
+| Google Drive       | `GoogleDriveFS.exe` |
+| Dropbox            | `Dropbox.exe`       |
+| Apple iCloud Drive | `iCloudDrive.exe`   |
+| Box                | `Box.exe`           |
+| MEGA               | `MEGAsync.exe`      |
+| IDrive             | `idwutil_64.exe`    |
+| pCloud             | `pCloud.exe`        |
+| Sync.com           | `sync-taskbar.exe`  |
 
 None of these clients expose a reliable command-line "pause" interface, so SyncFreeze
 pauses a service by stopping its process and restarts it when the timer expires (or
@@ -43,24 +43,28 @@ so it can be relaunched reliably. Dropbox is enabled by default.
 ## Installation
 
 ### Requirements
+
 - Python 3.10+
 - Windows 10/11
 
 ### Setup
+
 ```bash
 pip install -r requirements.txt
 ```
 
 ### Build standalone executables
+
 ```bash
 pip install pyinstaller
 build.bat
 ```
+
 Two executables are produced in `dist\`:
 
-| File | Purpose |
-|------|---------|
-| `SyncFreeze.exe` | CLI / launcher — prints output, exits immediately |
+| File                  | Purpose                                                             |
+| --------------------- | ------------------------------------------------------------------- |
+| `SyncFreeze.exe`      | CLI / launcher — prints output, exits immediately                   |
 | `SyncFreeze_tray.exe` | Background tray process — spawned automatically by `SyncFreeze.exe` |
 
 Both files must be kept in the same directory.
@@ -89,20 +93,20 @@ The CLI process exits immediately after sending its command. If no tray instance
 
 ### Tray Menu Options
 
-| Option | Action |
-|--------|--------|
-| Status... | Open status dialog (default action) |
-| Pause 1 minute | Pause selected services for 1 minute |
-| Pause 5 minutes | Pause selected services for 5 minutes |
-| Pause 10 minutes | Pause selected services for 10 minutes |
-| Pause 30 minutes | Pause selected services for 30 minutes |
-| Pause 1 hour | Pause selected services for 1 hour |
-| Pause indefinitely | Pause until manually resumed |
-| Resume | Restart selected services immediately |
-| Settings... | Choose which sync services to control |
-| Notifications | Toggle balloon notifications on/off |
-| About... | Version info |
-| Exit | Resume selected services (if paused) and close |
+| Option             | Action                                         |
+| ------------------ | ---------------------------------------------- |
+| Status...          | Open status dialog (default action)            |
+| Pause 1 minute     | Pause selected services for 1 minute           |
+| Pause 5 minutes    | Pause selected services for 5 minutes          |
+| Pause 10 minutes   | Pause selected services for 10 minutes         |
+| Pause 30 minutes   | Pause selected services for 30 minutes         |
+| Pause 1 hour       | Pause selected services for 1 hour             |
+| Pause indefinitely | Pause until manually resumed                   |
+| Resume             | Restart selected services immediately          |
+| Settings...        | Choose which sync services to control          |
+| Notifications      | Toggle balloon notifications on/off            |
+| About...           | Version info                                   |
+| Exit               | Resume selected services (if paused) and close |
 
 ## Settings
 
@@ -159,4 +163,4 @@ python -m syncfreeze.main -r
 
 ## License
 
-MIT
+AGPL-3.0
