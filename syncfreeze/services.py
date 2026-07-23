@@ -14,11 +14,25 @@ import os
 class Service:
     """Describes a supported file-sync application."""
 
-    def __init__(self, id, name, exe, default_paths=None):
+    def __init__(self, id, name, exe, default_paths=None, also_stop=None):
         self.id = id
         self.name = name
+        # Primary executable used for start/path caching and Settings display.
         self.exe = exe
         self.default_paths = default_paths or []
+        # Extra worker processes to terminate after the primary (and that also
+        # count as "running") — e.g. a sync engine owned by a GUI app.
+        self.also_stop = list(also_stop or [])
+
+    @property
+    def stop_exes(self):
+        """Process names to kill on pause: primary first, then workers."""
+        return [self.exe] + self.also_stop
+
+    @property
+    def status_exes(self):
+        """Process names that count as the service being running."""
+        return [self.exe] + self.also_stop
 
     def __repr__(self):
         return f"Service(id={self.id!r}, name={self.name!r}, exe={self.exe!r})"
@@ -113,6 +127,16 @@ SERVICES = [
         [
             _p("LOCALAPPDATA", "Sync", "sync-taskbar.exe"),
         ],
+    ),
+    Service(
+        "koofr",
+        "Koofr",
+        "storagegui.exe",
+        [
+            _p("LOCALAPPDATA", "koofr", "storagegui.exe"),
+        ],
+        # Sync engine; must die with the GUI or it keeps syncing / gets orphaned
+        also_stop=["storagesync.exe"],
     ),
 ]
 

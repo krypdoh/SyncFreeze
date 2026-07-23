@@ -74,10 +74,15 @@ def get_service_path(config, service):
     """Return a usable executable path for a service, or None.
 
     Prefers the cached path captured on stop, then falls back to well-known
-    default install locations.
+    default install locations. If the cache points at a companion process
+    (also_stop), prefer the primary start exe in the same directory.
     """
     cached = config.get("service_paths", {}).get(service.id)
     if cached and os.path.isfile(cached):
+        if os.path.basename(cached).lower() != service.exe.lower():
+            sibling = os.path.join(os.path.dirname(cached), service.exe)
+            if os.path.isfile(sibling):
+                return sibling
         return cached
     return find_service_path(service)
 

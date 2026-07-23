@@ -9,6 +9,11 @@ if not exist syncfreeze-icon.ico (
     exit /b 1
 )
 
+REM Stop running builds so PyInstaller can overwrite dist\*.exe
+echo Stopping any running SyncFreeze processes...
+taskkill /F /IM SyncFreeze.exe /T >nul 2>&1
+taskkill /F /IM SyncFreeze_tray.exe /T >nul 2>&1
+
 echo Building executables...
 pyinstaller --noconfirm SyncFreeze.spec
 if %ERRORLEVEL% neq 0 (

@@ -3,9 +3,9 @@
 **Temporarily pause file-sync services for a specified duration.**
 
 SyncFreeze is a Windows system tray utility that lets you pause and resume popular
-file-sync clients (Dropbox, OneDrive, Google Drive, and more) via the tray icon or
-command line. You choose which services it controls in **Settings**. After the pause
-duration expires, the selected services automatically restart.
+file-sync clients (Dropbox, OneDrive, Google Drive, Koofr, and more) via the tray
+icon or command line. You choose which services it controls in **Settings**. After
+the pause duration expires, the selected services automatically restart.
 
 ## Supported Services
 
@@ -22,6 +22,7 @@ Select any combination of the following in the **Settings** screen:
 | IDrive             | `idwutil_64.exe`    |
 | pCloud             | `pCloud.exe`        |
 | Sync.com           | `sync-taskbar.exe`  |
+| Koofr              | `storagegui.exe` (+ `storagesync.exe`) |
 
 None of these clients expose a reliable command-line "pause" interface, so SyncFreeze
 pauses a service by stopping its process and restarts it when the timer expires (or
@@ -36,7 +37,7 @@ so it can be relaunched reliably. Dropbox is enabled by default.
 - **Command-line interface** for scripting and quick access
 - **Visual indicator** — green icon when running, red when paused
 - **Balloon notifications** when pausing/resuming (can be disabled)
-- **Status dialog** (double-click tray icon) with live countdown timer
+- **Status dialog** (double-click tray icon) with live countdown and per-service Running/Stopped state
 - **Single instance** — CLI commands route to the running tray app via IPC
 - **Auto-resume on exit** — if you close SyncFreeze while paused, it restarts the selected services
 
@@ -89,7 +90,7 @@ The CLI process exits immediately after sending its command. If no tray instance
 ### System Tray
 
 - **Right-click** — Context menu with preset durations and options
-- **Double-click** — Status dialog with live countdown and Pause/Resume buttons
+- **Double-click** — Status dialog with live countdown, per-service Running/Stopped state, and Pause/Resume buttons
 
 ### Tray Menu Options
 
@@ -107,6 +108,9 @@ The CLI process exits immediately after sending its command. If no tray instance
 | Notifications      | Toggle balloon notifications on/off            |
 | About...           | Version info                                   |
 | Exit               | Resume selected services (if paused) and close |
+
+The status dialog lists each enabled service with a live **Running** / **Stopped**
+indicator so you can confirm pause and resume took effect.
 
 ## Settings
 

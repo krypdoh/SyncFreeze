@@ -69,7 +69,7 @@ class App:
     def _stop_services(self):
         """Stop all enabled services, caching each captured executable path."""
         for svc in get_enabled_services(self.config):
-            path = stop_service(svc.exe)
+            path = stop_service(svc.stop_exes, path_exe=svc.exe)
             remember_service_path(self.config, svc.id, path)
 
     def _start_services(self):
@@ -81,7 +81,10 @@ class App:
 
     def _service_status(self):
         """Return a list of (name, running) tuples for enabled services."""
-        return [(svc.name, is_service_running(svc.exe)) for svc in get_enabled_services(self.config)]
+        return [
+            (svc.name, is_service_running(svc.status_exes))
+            for svc in get_enabled_services(self.config)
+        ]
 
     def _enabled_label(self):
         """Human-readable label for the enabled services."""

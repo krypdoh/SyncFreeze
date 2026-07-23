@@ -100,6 +100,13 @@ class StatusDialog:
         self._timer_label = tk.Label(self._timer_frame, text="", font=("Segoe UI", 12))
         self._timer_label.pack(anchor=tk.W, pady=(2, 10))
 
+        # Enabled services and their process state
+        tk.Label(frame, text="Services:", font=("Segoe UI", 10)).pack(anchor=tk.W)
+        self._services_frame = tk.Frame(frame)
+        self._services_frame.pack(anchor=tk.W, fill=tk.X, pady=(2, 0))
+        self._service_rows = []  # list of (name_label, state_label)
+        self._services_empty_label = None
+
         # Buttons
         btn_frame = tk.Frame(frame)
         btn_frame.pack(fill=tk.X, pady=(10, 0))
@@ -157,11 +164,59 @@ class StatusDialog:
                 else:
                     self._timer_label.config(text="—")
 
+            self._update_services()
+
             # Schedule next update
             self._update_job = self._window.after(1000, self._update_display)
         except tk.TclError:
             # Window was destroyed
             self._window = None
+
+    def _update_services(self):
+        """Refresh the list of enabled services and their running/stopped state."""
+        services = self.app._service_status()
+
+        if not services:
+            if self._service_rows:
+                for child in self._services_frame.winfo_children():
+                    child.destroy()
+                self._service_rows = []
+            if self._services_empty_label is None:
+                self._services_empty_label = tk.Label(
+                    self._services_frame,
+                    text="(none selected)",
+                    font=("Segoe UI", 10),
+                    fg="#666666",
+                )
+                self._services_empty_label.pack(anchor=tk.W)
+            return
+
+        if self._services_empty_label is not None:
+            self._services_empty_label.destroy()
+            self._services_empty_label = None
+
+        names = [name for name, _ in services]
+        current_names = [lbl.cget("text").rstrip(":") for lbl, _ in self._service_rows]
+        if names != current_names:
+            for child in self._services_frame.winfo_children():
+                child.destroy()
+            self._service_rows = []
+            for name, _ in services:
+                row = tk.Frame(self._services_frame)
+                row.pack(anchor=tk.W, fill=tk.X)
+                name_lbl = tk.Label(
+                    row, text=f"{name}:", font=("Segoe UI", 10), width=20, anchor=tk.W
+                )
+                name_lbl.pack(side=tk.LEFT)
+                state_lbl = tk.Label(row, text="", font=("Segoe UI", 10, "bold"))
+                state_lbl.pack(side=tk.LEFT)
+                self._service_rows.append((name_lbl, state_lbl))
+
+        for (_, state_lbl), (_, running) in zip(self._service_rows, services):
+            state_lbl.config(
+                text="Running" if running else "Stopped",
+                fg="#228B22" if running else "#CC0000",
+            )
 
     def _on_pause(self):
         """Prompt user for minutes and pause."""
